@@ -24,12 +24,10 @@ class MatchPredictor:
             self.load_model(model_path)
     
     def load_model(self, path: str):
-        """Load trained model"""
         self.model = joblib.load(path)
         logger.info(f"Model loaded from {path}")
     
     def predict_match(self, match_data: Dict) -> Dict:
-        """Predict match outcome with confidence scoring"""
         # Prepare features
         df = pd.DataFrame([match_data])
         features = self.feature_engineer.create_features(df)
@@ -55,25 +53,18 @@ class MatchPredictor:
             'model_used': self.model_path
         }
         
-        # Store prediction
         self.prediction_history.append(prediction_result)
-        
         return prediction_result
     
     def predict_multiple(self, matches: List[Dict]) -> List[Dict]:
-        """Predict multiple matches"""
-        predictions = []
-        for match in matches:
-            prediction = self.predict_match(match)
-            predictions.append(prediction)
-        return predictions
+        return [self.predict_match(m) for m in matches]
     
     def get_prediction_stats(self) -> Dict:
-        """Get prediction statistics"""
         if not self.prediction_history:
             return {'total_predictions': 0}
-        
         predictions_df = pd.DataFrame(self.prediction_history)
-        
         return {
-            'total_predictions': len(self.pred
+            'total_predictions': len(self.prediction_history),
+            'avg_confidence': float(predictions_df['confidence'].mean()),
+            'predictions_by_type': predictions_df['prediction'].value_counts().to_dict()
+        }
