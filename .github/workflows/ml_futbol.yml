@@ -24,10 +24,10 @@ jobs:
         pip install -r requirements.txt
 
     - name: Ejecutar extracción de datos
-      run: python data_extraction.py
+      run: python src/data_extraction.py
 
     - name: Ejecutar entrenamiento de modelo
-      run: python model_training.py
+      run: python src/model_training.py
 
     - name: Subir modelo entrenado como artefacto
       uses: actions/upload-artifact@v4
